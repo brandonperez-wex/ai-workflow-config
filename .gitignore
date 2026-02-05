@@ -1,0 +1,24 @@
+# OS
+.DS_Store
+Thumbs.db
+
+# Credentials (never commit)
+*.pem
+*.key
+credentials.json
+token.json
+.env
+.env.local
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Logs
+*.log
+
+# Local overrides
+*.local.md
+*.local.json

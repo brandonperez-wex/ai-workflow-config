@@ -1,0 +1,71 @@
+{
+  "description": "MCP servers for AI workflow optimization",
+  "servers": [
+    {
+      "name": "shadcn",
+      "priority": 1,
+      "description": "shadcn/ui component library integration",
+      "type": "stdio",
+      "command": "npx",
+      "args": ["shadcn@latest", "mcp"],
+      "documentation": "https://ui.shadcn.com/docs/mcp"
+    },
+    {
+      "name": "atlassian",
+      "priority": 2,
+      "description": "Jira and Confluence integration",
+      "type": "http",
+      "url": "https://mcp.atlassian.com/v1/mcp",
+      "auth": "oauth2",
+      "documentation": "https://www.atlassian.com/platform/remote-mcp-server",
+      "envVars": [
+        "ATLASSIAN_URL",
+        "ATLASSIAN_USERNAME",
+        "ATLASSIAN_API_TOKEN"
+      ]
+    },
+    {
+      "name": "google-workspace",
+      "priority": 3,
+      "description": "Gmail, Drive, Docs, Sheets, Calendar",
+      "type": "stdio",
+      "command": "npx",
+      "args": ["google-workspace-mcp"],
+      "auth": "oauth2",
+      "documentation": "https://workspacemcp.com/",
+      "envVars": [
+        "GOOGLE_CLIENT_ID",
+        "GOOGLE_CLIENT_SECRET"
+      ]
+    },
+    {
+      "name": "github",
+      "priority": 4,
+      "description": "Enhanced GitHub operations beyond gh CLI",
+      "type": "stdio",
+      "command": "npx",
+      "args": ["@modelcontextprotocol/server-github"],
+      "documentation": "https://github.com/modelcontextprotocol/servers",
+      "envVars": [
+        "GITHUB_TOKEN"
+      ]
+    },
+    {
+      "name": "context7",
+      "priority": 5,
+      "description": "Documentation lookup for libraries",
+      "type": "http",
+      "url": "https://mcp.context7.com/mcp",
+      "documentation": "https://context7.com/docs"
+    },
+    {
+      "name": "sequential-thinking",
+      "priority": 6,
+      "description": "Enhanced reasoning for complex problems",
+      "type": "stdio",
+      "command": "npx",
+      "args": ["@modelcontextprotocol/server-sequential-thinking"],
+      "documentation": "https://github.com/modelcontextprotocol/servers"
+    }
+  ]
+}
