@@ -1,0 +1,45 @@
+{
+  "description": "Claude Code plugins to install from marketplaces",
+  "plugins": [
+    {
+      "name": "frontend-design",
+      "marketplace": "claude-plugins-official",
+      "description": "Production-ready React UI components with TypeScript and Tailwind"
+    },
+    {
+      "name": "context7",
+      "marketplace": "claude-plugins-official",
+      "description": "Up-to-date documentation lookup for any library"
+    },
+    {
+      "name": "github",
+      "marketplace": "claude-plugins-official",
+      "description": "GitHub MCP integration for enhanced repo operations"
+    },
+    {
+      "name": "atlassian",
+      "marketplace": "claude-plugins-official",
+      "description": "Jira and Confluence integration with skills"
+    },
+    {
+      "name": "superpowers",
+      "marketplace": "claude-plugins-official",
+      "description": "Advanced workflow skills: TDD, debugging, code review, planning"
+    },
+    {
+      "name": "superpowers-lab",
+      "marketplace": "superpowers-marketplace",
+      "description": "Experimental skills: Slack, tmux, MCP CLI, duplicate finder"
+    }
+  ],
+  "marketplaces": [
+    {
+      "name": "claude-plugins-official",
+      "url": "https://github.com/anthropics/claude-plugins-official"
+    },
+    {
+      "name": "superpowers-marketplace",
+      "url": "https://github.com/anthropics/superpowers-marketplace"
+    }
+  ]
+}
