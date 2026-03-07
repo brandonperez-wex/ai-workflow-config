@@ -66,6 +66,18 @@
       "command": "npx",
       "args": ["@modelcontextprotocol/server-sequential-thinking"],
       "documentation": "https://github.com/modelcontextprotocol/servers"
+    },
+    {
+      "name": "document-parser",
+      "priority": 7,
+      "description": "Document parsing, extraction, and classification via extend.ai",
+      "type": "http",
+      "url": "http://localhost:3001/mcp",
+      "documentation": "~/Projects/document-parser-mcp/.claude/CLAUDE.md",
+      "envVars": [
+        "EXTEND_AI_API_KEY"
+      ],
+      "notes": "Start with: cd ~/Projects/document-parser-mcp && npm run dev"
     }
   ]
 }
