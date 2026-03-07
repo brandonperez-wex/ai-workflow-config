@@ -1,6 +1,6 @@
 ---
 name: design
-description: Collaborative design phase — orchestrates research, architecture, TDD, and UI/UX skills into a cohesive plan. Use at the start of any non-trivial feature work. Produces a design doc with vertical slices ready for the build phase.
+description: Collaborative design phase — orchestrates write-spec, technical-breakdown, and their sub-skills (research, architecture, test-planning, UI/UX) into a cohesive plan with review gates. Use at the start of any non-trivial feature work.
 allowed-tools:
   - Read
   - Write
@@ -15,7 +15,7 @@ allowed-tools:
 
 # Design
 
-Collaborative phase that produces a design doc. Orchestrates the utility skills (research, architecture, tdd-edd, ui-ux-design) into a cohesive plan the user has validated at every step.
+Domain orchestrator for the design phase. Delegates to **write-spec** (business spec with review gate) and **technical-breakdown** (technical spec with review gate), which in turn delegate to research, architecture, test-planning, and ui-ux-design. The user validates at every transition.
 
 <HARD-GATE>
 Do NOT write implementation code during this phase. The output is a design document, not code. Transition to the build skill when the design is approved.
@@ -47,19 +47,7 @@ Default to **medium**. Escalate if you discover unexpected complexity during res
 
 ## Flow
 
-### 1. Understand — Frame the Problem
-
-Ask concise questions to establish what we're solving. One question at a time. Prefer multiple choice when possible.
-
-Establish:
-- **Problem** — what's broken, missing, or needed (2-3 sentences)
-- **Goals** — what success looks like, quantified where possible
-- **Non-goals** — what this feature deliberately does NOT do (prevents scope creep)
-- **Constraints** — tech stack, timeline, existing patterns, deployment model
-
-**Output:** A current-state → desired-state spec. "The system currently does X. After this work, it should do Y."
-
-### 2. Research — Explore the Landscape
+### 1. Research — Explore the Landscape
 
 Invoke the **research** skill to investigate:
 - Existing codebase patterns and conventions
@@ -67,54 +55,44 @@ Invoke the **research** skill to investigate:
 - External libraries, APIs, or services involved
 - Similar implementations for reference
 
+**For agent/MCP systems:** also invoke **tool-discovery** to find MCP servers, APIs worth wrapping, or software worth adopting that could expand the system's capabilities.
+
 Present findings concisely. Lead with what matters for the decisions ahead, not everything you found.
 
 **Check in with the user** before proceeding. "Here's what I found — does this change our approach?"
 
-### 3. Architecture — Define the Structure
+### 2. Business Spec — Define What We're Building
 
-Invoke the **architecture** skill to define:
-- Components and their responsibilities
-- Data flow through the system
-- API contracts (TypeScript interfaces, Zod schemas)
-- Integration points and schema changes
-- Key decisions with alternatives considered and rationale
+Invoke **write-spec** to produce the business specification:
+- Problem, goals, non-goals
+- User stories with acceptance criteria
+- Business-readable acceptance test scenarios (Given/When/Then)
+- Technical dependencies surfaced early
 
-**Check in with the user** on each key decision. Present as: "We need to choose between X and Y. I recommend X because [reason]. Y is better if [condition]."
+write-spec creates the feature directory (`specs/NNN-<topic>/spec.md`) and submits a PR for PM/manager review.
 
-### 4. Test Strategy — Define What Done Looks Like
+**Review gate:** Business spec PR must be approved before proceeding to technical design. For solo projects, the user can explicitly skip this gate.
 
-Invoke the **tdd-edd** skill to define:
-- Vertical feature slices (each independently testable)
-- Integration test outline for each slice (real controlled deps, mocked uncontrolled deps)
-- Unit test strategy per layer
-- Eval strategy for any agent behavior (grader types, success criteria, trial count)
+### 3. Technical Spec — Define How We're Building It
 
-Test strategy and architecture inform each other — if tests are hard to define, the architecture may need adjustment. Flag this tension rather than forcing a fit.
+Invoke **technical-breakdown** to produce the technical design:
+- Delegates to **architecture** for system structure and contracts
+- Delegates to **test-planning** to translate acceptance scenarios into integration test contracts
+- Delegates to **ui-ux-design** if frontend work is involved
+- Produces vertical slices with walking skeleton as Slice 0
 
-**Check in with the user.** "Here are the slices. Does this ordering make sense?"
+**For agent/MCP systems:** technical-breakdown should also invoke:
+- **ai-agent-building** for tool design, model selection, orchestration patterns
+- **prompt-engineering** for system prompt structure
+- **eval-driven-dev** for grader types and success criteria
 
-### 5. UI/UX (if frontend work)
+technical-breakdown saves to `specs/NNN-<topic>/technical.md` and submits a PR for engineer review.
 
-Invoke the **ui-ux-design** skill to define:
-- Visual direction and interaction patterns
-- Agentic UX patterns (if AI-driven features)
-- Component recommendations with specific treatments
-- Animation and layout decisions
+**Review gate:** Technical spec PR must be approved before proceeding to build. For solo projects, the user can explicitly skip this gate.
 
-### 6. Slice and Sequence
+### 4. Transition to Build
 
-Break the design into ordered vertical slices. Each slice should be:
-- A complete vertical cut through all layers (UI → API → Service → Data)
-- Independently testable with its own integration test
-- Independently deliverable (mergeable without breaking anything)
-- Ordered by dependency (foundations first, risk first, learning first)
-
-**Slice 0 is always the walking skeleton** — the thinnest possible end-to-end path proving infrastructure works before feature tests.
-
-### 7. Save and Transition
-
-Write the design doc to `docs/plans/YYYY-MM-DD-<topic>-design.md` and commit.
+After both specs are approved, invoke **decompose-tasks** to break the technical spec into implementation tasks, then transition to **build**.
 
 ## Collaboration Style
 
@@ -148,71 +126,24 @@ Include boundaries in every design doc:
 - **Ask first:** Decisions that need human approval before acting (e.g., "Ask before adding new dependencies")
 - **Never:** Hard constraints (e.g., "Never commit secrets," "Never mock controlled dependencies in integration tests")
 
-## Design Doc Format
+## Spec Directory Structure
 
-```markdown
-# [Feature Name] Design
+Design produces a feature directory under `specs/` at the project root:
 
-> Date: YYYY-MM-DD
-> Status: Draft | Approved
-
-## Problem
-[What problem does this solve? 2-3 sentences.]
-
-## Goals
-- [Measurable outcome 1]
-- [Measurable outcome 2]
-
-## Non-Goals
-- [What this deliberately does NOT do]
-
-## Solution
-[High-level approach. 2-3 sentences. Current state → desired state.]
-
-## Architecture
-[Components, data flow, contracts — from architecture skill]
-
-## Vertical Slices
-[Ordered list of feature slices — each with integration test outline]
-
-### Slice 0: Walking Skeleton
-- **What:** Thinnest end-to-end path proving infrastructure works
-- **Integration test:** [Basic connectivity assertion]
-- **Layers:** [Minimal path through all layers]
-
-### Slice 1: [Name]
-- **What:** [User-visible behavior]
-- **Integration test:** [What the real test asserts]
-- **Layers:** [Route → Service → Adapter → External]
-- **Types:** [Key interfaces]
-
-### Slice 2: [Name]
-...
-
-## UI/UX
-[Design direction, patterns, components — if frontend work]
-
-## Decisions
-| Decision | Alternatives | Rationale |
-|----------|-------------|-----------|
-
-## Boundaries
-- **Always:** [Invariants]
-- **Ask first:** [Human-approval items]
-- **Never:** [Hard constraints]
-
-## Open Questions
-[Anything still unresolved]
+```
+specs/NNN-<topic>/
+├── spec.md              # Business spec (from write-spec)
+├── technical.md         # Technical design (from technical-breakdown)
+├── research.md          # Investigation notes (from research, if any)
+├── tasks.md             # Implementation breakdown (from decompose-tasks)
+└── decisions/           # ADRs for key decisions (optional)
 ```
 
-## After Design Approval
-
-When the user approves the design:
-1. Save to `docs/plans/`
-2. Commit the design doc
-3. Transition to the **build** skill to execute
+## After Both Specs Are Approved
 
 The terminal state of design is invoking **build**. Do not invoke any other phase skill.
+
+Follow the communication-protocol skill for all user-facing output and interaction.
 
 ## Guidelines
 

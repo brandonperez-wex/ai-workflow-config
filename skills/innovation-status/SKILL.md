@@ -16,7 +16,7 @@ argument-hint: "[report type: weekly | monthly | gate | executive] or [specific 
 
 # Innovation Status
 
-Scan artifacts, synthesize progress, produce the right report for the right audience. No manual status-gathering.
+A status report that doesn't surface decisions is just a comfort blanket. Every report answers "what do we need to decide?" — not just "where are we?"
 
 <HARD-GATE>
 Status reports reflect what artifacts say, not what you think the status is. If there's no artifact, the status is "no evidence" — not "probably fine." Optimistic status reporting is how innovation teams die.
@@ -35,13 +35,13 @@ Status reports reflect what artifacts say, not what you think the status is. If 
 1. If $ARGUMENTS specifies a report type, use that format
 2. If $ARGUMENTS names a specific opportunity, generate status for just that one
 3. If no arguments, default to weekly team update
-4. Always scan `docs/plans/` for all artifacts to build the picture
+4. Scan `specs/` and `docs/plans/` for all artifacts to build the picture
 
 ## Process
 
 ### Step 1: Scan the Artifact Landscape
 
-Search `docs/plans/` for all innovation artifacts:
+Search `specs/` and `docs/plans/` for all innovation artifacts:
 
 ```
 ARTIFACT SCAN:
@@ -260,10 +260,10 @@ HEALTH FLAGS:
 
 - Get today's date: !`date +%Y-%m-%d`
 - Save based on report type:
-  - Weekly: `docs/plans/YYYY-MM-DD-innovation-weekly.md`
-  - Monthly: `docs/plans/YYYY-MM-DD-innovation-monthly.md`
-  - Gate: `docs/plans/YYYY-MM-DD-<opportunity>-gate-review.md`
-  - Executive: `docs/plans/YYYY-MM-DD-innovation-executive.md`
+  - Weekly: `docs/reports/YYYY-MM-DD-innovation-weekly.md`
+  - Monthly: `docs/reports/YYYY-MM-DD-innovation-monthly.md`
+  - Gate: `docs/reports/YYYY-MM-DD-<opportunity>-gate-review.md`
+  - Executive: `docs/reports/YYYY-MM-DD-innovation-executive.md`
 
 After saving, ask:
 
@@ -272,6 +272,17 @@ After saving, ask:
 (b) Run opportunity-score on an unscored opportunity?
 (c) Generate a different report type?
 (d) Move on?"
+
+Follow the communication-protocol skill for all user-facing output and interaction.
+
+## Anti-Patterns
+
+| Anti-Pattern | Problem | Fix |
+|---|---|---|
+| **Optimistic inference** | "Probably on track" with no artifact evidence | If there's no artifact, say "no evidence" |
+| **Activity = progress** | Lots of commits but no stage advancement | Track stage transitions, not busyness |
+| **Stale comfort** | Report looks green but data is 6 weeks old | Flag staleness prominently |
+| **Decision-free report** | Status update with no "what should we do?" | Every report needs a decisions/priorities section |
 
 ## Guidelines
 

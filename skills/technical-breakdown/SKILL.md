@@ -1,9 +1,10 @@
 ---
 name: technical-breakdown
-description: Convert a product spec into a technical architecture and design document. Use after write-spec to create implementation architecture with data models, APIs, and component design.
+description: Convert a product spec into a technical implementation plan. Produces a numbered technical spec that engineers review via PR before coding begins. Delegates to architecture, test-planning, and UI/UX skills.
 allowed-tools:
   - Read
   - Write
+  - Edit
   - Glob
   - Grep
   - Bash
@@ -13,194 +14,147 @@ argument-hint: "[path/to/spec.md or topic name]"
 
 # Technical Breakdown
 
-Transform a product specification into a detailed technical architecture and design document.
+A technical design is a set of decisions, not a template to fill. Every section answers a question — if there's no question, skip the section. The output is a document that engineers review and approve via PR before anyone writes code.
 
-## When to Use
-
-- After a product spec has been written (via `write-spec` or manually)
-- When you need to plan the technical implementation of a feature
-- As the second step of the spec → technical → tasks pipeline
+<HARD-GATE>
+Read the actual codebase before designing. Never design against an imagined architecture.
+</HARD-GATE>
 
 ## Input Resolution
 
 1. If `$ARGUMENTS` is a file path, read that file as input
-2. If `$ARGUMENTS` is a topic name, search `docs/plans/` for the most recent `*-spec.md` matching that topic
-3. If no arguments, search `docs/plans/` for the most recently modified `*-spec.md` file
+2. If `$ARGUMENTS` is a topic name, search `specs/` for a directory matching that topic, then read `spec.md` within it
+3. If no arguments, search `specs/` for the most recently modified `spec.md`
 4. If no spec file exists, ask the user if they want to run `write-spec` first
-
-## Collaboration Principles
-
-**The user is the bottleneck, not you.** They read and decide slower than you generate. Optimize for their comprehension, not your throughput.
-
-- **Keep it short.** Prefer bullet points over paragraphs. One idea per message.
-- **Decide together.** Present architectural choices as options with trade-offs, not conclusions.
-- **Build incrementally.** Walk through the design section by section, not all at once.
-- **Respect reading fatigue.** If you're about to send a wall of text, break it up or summarize first and offer details on request.
 
 ## Process
 
-### Step 1: Understand the Spec and Codebase
+### Step 1: Understand Spec and Codebase
+
 - Read the product specification thoroughly
-- Read the project's existing codebase to understand current architecture:
-  - Check for `package.json`, `tsconfig.json`, or equivalent to identify tech stack
-  - Scan `src/` directory structure for architectural patterns
-  - Look at existing data models, API routes, and component patterns
-- Identify which user stories and requirements drive architectural decisions
+- Read the project's existing codebase:
+  - `package.json`, `tsconfig.json` or equivalent for tech stack
+  - `src/` directory structure for architectural patterns
+  - Existing data models, API routes, component patterns
+- Map spec requirements to architectural decisions needed
 
 ### Step 2: Align on Approach
-Before writing the full design, have a short conversation with the user:
-1. **Summarize the current architecture** briefly (what exists, what patterns are used)
-2. **Propose the high-level approach** in a few bullets. Ask: "Does this direction make sense?"
-3. **Surface key architectural decisions** as choices with trade-offs. Let the user pick.
-4. **Flag open technical questions** from the spec that need answers before designing
 
-Only move on once the user confirms the overall approach and key decisions.
+Before designing:
+1. **Summarize current architecture** — what exists, what patterns are used
+2. **Propose high-level approach** — 3-5 bullets. Ask: "Does this direction make sense?"
+3. **Surface key decisions** — present as choices with trade-offs, let the user pick
+4. **Flag constraints** that affect the business spec (loop back to write-spec if needed)
 
-### Step 3: Build the Design Collaboratively
-Work through the template section by section. For each section:
-- Draft it concisely, grounded in actual codebase patterns
-- Present it to the user for feedback
-- Incorporate changes before moving on
+Do NOT proceed until the user confirms the overall approach.
 
-Group related sections where it makes sense. Move faster when aligned, slow down on decisions.
+### Step 3: Architecture
 
-**Key decision points to always pause on:**
-- Architecture approach (how components connect)
-- Data models (are the interfaces right?)
-- API design (are these the right endpoints/functions?)
-- Any section where multiple valid approaches exist
+Invoke **architecture** skill to define:
+- Components and responsibilities
+- Data flow and contracts (TypeScript interfaces, Zod schemas)
+- Integration points and schema changes
+- Key decisions with alternatives considered and rationale
 
-### Step 4: Save the Artifact
-- Derive the filename from the input file: replace `-spec.md` with `-technical.md`
-- If no input file, use format: `docs/plans/YYYY-MM-DD-<topic>-technical.md`
-- Get today's date: !`date +%Y-%m-%d`
-- Ensure directory exists: `mkdir -p docs/plans`
+### Step 4: API & Data Design
 
-### Step 5: Hand Off to Task Decomposition
-After saving, give the user a brief summary of the key decisions and let them know the next step is `decompose-tasks`. Invoke it:
-```
-Skill: decompose-tasks
-Args: <path-to-technical-file>
-```
+For each interface boundary:
+- Endpoint/function signature
+- Input/output shapes
+- Error cases and codes
+- Validation rules
 
-Do NOT skip asking — confirm the user is ready to move on.
+Ground everything in actual codebase conventions. Follow existing patterns.
 
-## Technical Design Template
+### Step 5: Test Strategy
 
-The document MUST follow this structure:
+Invoke **test-planning** skill to translate the business spec's acceptance scenarios into implementable test contracts:
+- Acceptance scenarios from write-spec become integration test contracts
+- Mock boundaries (real controlled deps, mocked uncontrolled deps)
+- Unit test targets per layer
 
-```markdown
-# Technical Design: <Feature Name>
+For AI/agent features, invoke **eval-driven-dev** for grader types, success criteria, and trial counts.
 
-> Date: YYYY-MM-DD
-> Status: Draft
-> Spec: <path to product spec>
+The business spec's Given/When/Then scenarios are the starting point. This step makes them technically precise.
 
-## Overview
+### Step 6: UI/UX (if frontend work)
 
-1-2 paragraph summary of the technical approach. What are we building and what is the high-level strategy?
+Invoke **ui-ux-design** skill for:
+- Visual direction and interaction patterns
+- Component recommendations
+- Agentic UX patterns (if AI features)
 
-## Architecture Context
+### Step 7: Vertical Slices
 
-### Current State
-- Description of relevant existing architecture
-- Key files and modules that will be affected
-- Existing patterns to follow
+Break the design into ordered slices:
+- Each slice is a complete vertical cut through all layers
+- Each is independently testable and deliverable
+- Order: dependencies first, then risk, then learning
+- **Slice 0 is always the walking skeleton** — thinnest end-to-end path proving infrastructure works
 
-### Target State
-- How the architecture will look after implementation
-- New modules/components being introduced
+### Step 8: Save the Technical Spec
 
-### Architecture Diagram
-(ASCII diagram showing component relationships)
+**Spec document protocol:**
+- Save into the **same feature directory** as the business spec
+- Filename: `specs/NNN-<topic>/technical.md`
+- If research was done during this phase, save notes to `specs/NNN-<topic>/research.md`
+- Key architectural decisions can go in `specs/NNN-<topic>/decisions/` as individual ADRs
 
-## Tech Stack
+### Step 9: Submit for Review
 
-| Layer | Technology | Justification |
-|-------|-----------|---------------|
-| Layer 1 | Tech | Why |
+The technical spec is a reviewable artifact. Before coding begins:
+1. Commit the technical spec to the feature branch
+2. Push the branch
+3. Create a PR for engineer review (or update the existing spec PR)
 
-## Data Models
+Invoke **commit-and-pr** to handle staging, commit, push, and PR creation.
 
-### <Model Name>
-- TypeScript interface with fields and types
-- Storage: Where this lives (database table, API response, etc.)
-- Relationships: How it connects to other models
-- Validation: Key constraints
+**Do NOT proceed to build until the technical spec PR is approved.** If the user wants to continue immediately (e.g., solo project, time pressure), get explicit confirmation before skipping the review gate.
 
-(repeat for each model)
+### Step 10: Hand Off
 
-## API Design
+After approval (or explicit skip):
+- Summarize key decisions and vertical slices
+- Confirm user is ready to proceed
+- Invoke **decompose-tasks** with the technical spec path
 
-### <Endpoint or Function>
-- **Purpose**: What it does
-- **Signature**: `GET /api/resource` or `function name(params): ReturnType`
-- **Input**: Parameters, request body
-- **Output**: Response shape
-- **Errors**: Error cases and codes
+## Which Sections to Include
 
-(repeat for each endpoint/function)
+Not every feature needs every section. Match depth to complexity:
 
-## Component Design
+| Section | Always | Medium+ | Large Only |
+|---|---|---|---|
+| Architecture overview | yes | yes | yes |
+| Data models | yes | yes | yes |
+| API design | yes | yes | yes |
+| Vertical slices | yes | yes | yes |
+| Architecture diagram | | yes | yes |
+| Component design | | if frontend | yes |
+| State management | | if complex state | yes |
+| Security considerations | | if auth/data | yes |
+| Performance considerations | | if scale concern | yes |
+| Migration plan | | | if changing existing |
 
-### <Component Name>
-- **Purpose**: What it renders/manages
-- **Props**: Input interface
-- **State**: Internal state it manages
-- **Dependencies**: Other components, hooks, services
-- **File Location**: Where it will live in the codebase
+## Anti-Patterns
 
-(repeat for each component)
+| Anti-Pattern | Problem | Fix |
+|---|---|---|
+| **Designing without reading code** | Proposes patterns that clash with existing architecture | Hard gate: read the codebase first |
+| **Template-filling** | Every section filled regardless of relevance. 20 pages for a 2-day feature. | Skip sections that don't answer a question |
+| **No alternatives discussed** | Single approach presented as inevitable. Hides trade-offs. | Every key decision needs alternatives and rationale |
+| **Imaginary architecture** | Describes ideal state without accounting for current reality | Current state to target state, with migration path |
+| **Test strategy as afterthought** | "We'll add tests later." Tests shape architecture. | Test strategy co-evolves with architecture |
 
-## Integration Points
+## Coupling with Business Spec
 
-- How this feature connects to existing code
-- External service dependencies
-- Event/message flows
-
-## State Management
-
-- How state flows through the feature
-- State machine transitions (if applicable)
-- Side effects and their triggers
-
-## Error Handling Strategy
-
-- Expected error scenarios
-- Recovery strategies
-- User-facing error messages
-
-## Security Considerations
-
-- Input validation approach
-- Authentication/authorization checks
-- Data sanitization
-
-## Testing Strategy
-
-- Unit test targets (functions, utilities)
-- Component test targets (rendering, interactions)
-- Integration test targets (API flows, state transitions)
-- Edge cases to cover
-
-## Risks and Mitigations
-
-| Risk | Impact | Likelihood | Mitigation |
-|------|--------|------------|------------|
-| Risk 1 | High/Med/Low | High/Med/Low | Strategy |
-
-## Open Technical Questions
-
-- [ ] Decision 1: Options and trade-offs
-- [ ] Decision 2: Options and trade-offs
-```
+- **Technical constraints change business decisions**: If architecture makes a feature impractical or expensive, loop back to write-spec and update.
+- **Business spec tests are your starting point**: Acceptance scenarios from write-spec become integration test contracts here.
+- **The design skill** manages iteration between business and technical specs when orchestrating the full pipeline.
 
 ## Guidelines
 
 - Ground everything in the ACTUAL codebase — read existing files, reference real paths
-- Follow existing patterns; do not introduce new architectural paradigms without justification
-- Data models should include TypeScript interfaces that match existing conventions
-- API design should follow existing route/function patterns in the project
-- Every component should have a clear file location based on existing structure
-- Testing strategy should use the project's existing test framework and patterns
+- Follow existing patterns; don't introduce new paradigms without justification
+- Data models should match existing conventions
 - Be explicit about what files will be created vs. modified
+- Testing strategy should use the project's existing test framework

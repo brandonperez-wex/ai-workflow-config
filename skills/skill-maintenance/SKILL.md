@@ -208,8 +208,10 @@ When updating one skill, check related skills for consistency:
 |---------------|-----------|
 | boilerplate-cicd | build (verification commands), ship (CI references) |
 | architecture | design (architecture section), build (component references) |
-| tdd-edd | build (test strategy), design (test section) |
-| mermaid | design (diagrams in design docs), architecture (data flow diagrams) |
+| test-planning | design (test strategy section) |
+| tdd | build (test execution) |
+| eval-driven-dev | ai-agent-building (agent evals) |
+| architecture-diagram | design (diagrams in design docs), architecture (data flow diagrams) |
 | ai-agent-building | build (agent-specific patterns), architecture (orchestration) |
 
 ## Anti-Patterns
@@ -222,6 +224,8 @@ When updating one skill, check related skills for consistency:
 | **Changing without validation** | Introduces new errors | Always research before changing |
 | **Updating the skill but not the learnings log** | Entries stay open, causing re-investigation | Mark entries resolved when addressed |
 | **Silent fixes** | No audit trail of why something changed | Always add a changelog entry |
+
+Follow the communication-protocol skill for all user-facing output and interaction.
 
 ## Guidelines
 
