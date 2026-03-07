@@ -184,6 +184,8 @@ Stop researching when:
 
 Don't stop just because you found *an* answer. Stop because you found *the right* answer with evidence.
 
+Follow the communication-protocol skill for all user-facing output and interaction.
+
 ## Guidelines
 
 - **Start broad, narrow fast.** Glob first, then targeted reads.

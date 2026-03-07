@@ -250,6 +250,8 @@ After saving, present Layer 1 and ask:
 
 If the user chooses (c), invoke: `Skill: write-spec` with `Args: <path-to-product-def>`
 
+Follow the communication-protocol skill for all user-facing output and interaction.
+
 ## Guidelines
 
 - **Customer perspective, not technical.** "User sees a map of technicians" not "React component renders MapBox tiles."

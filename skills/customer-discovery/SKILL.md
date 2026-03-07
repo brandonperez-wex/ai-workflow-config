@@ -242,6 +242,8 @@ After saving, present Layer 1 and ask:
 | 2 — Pattern | Multiple sources independently confirm | 4-7 data points, 40%+ consistency |
 | 3 — Validated | Strong signal across segments | 8+ data points, 60%+ consistency, quantified impact |
 
+Follow the communication-protocol skill for all user-facing output and interaction.
+
 ## Guidelines
 
 - **Cite everything.** Every finding traces back to a specific source.

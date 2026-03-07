@@ -207,6 +207,8 @@ After saving, present the decision brief (Layer 1 only) and ask:
 - Fatal risks identified (regulatory, competitive, technical)
 - Or: timing is wrong (revisit in 6-12 months)
 
+Follow the communication-protocol skill for all user-facing output and interaction.
+
 ## Guidelines
 
 - **Have an opinion.** "Further research needed" is not a verdict. Pick a color and defend it.

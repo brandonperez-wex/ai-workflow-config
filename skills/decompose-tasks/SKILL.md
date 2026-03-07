@@ -166,6 +166,8 @@ The plan file MUST follow this structure:
 5. **Integration**: Wiring components together, end-to-end flows
 6. **Polish**: Error handling improvements, edge cases, final verification
 
+Follow the communication-protocol skill for all user-facing output and interaction.
+
 ## Guidelines
 
 - Read ACTUAL test files in the project to match test style (describe/it vs test, assertion library, etc.)

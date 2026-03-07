@@ -556,6 +556,8 @@ When starting a new project:
 7. **Verify** — run `pnpm check` to confirm everything works
 8. **Commit** — initial commit with all scaffolding
 
+Follow the communication-protocol skill for all user-facing output and interaction.
+
 ## Guidelines
 
 - **Biome over ESLint+Prettier for new projects.** Faster, simpler, one config file. Migrate incrementally for existing projects.

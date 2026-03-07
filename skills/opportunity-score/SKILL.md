@@ -206,6 +206,8 @@ After saving, present Layer 1 and ask:
 (d) Run product-definition if this is a GO?
 (e) Move on?"
 
+Follow the communication-protocol skill for all user-facing output and interaction.
+
 ## Guidelines
 
 - **Evidence, not opinion.** A score of 0 for "no evidence" is MORE useful than a score of 2 based on "I think customers would like it."

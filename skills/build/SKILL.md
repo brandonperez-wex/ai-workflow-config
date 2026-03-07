@@ -180,6 +180,8 @@ Update the TodoWrite task. Brief status to user: "Slice N done — spec ✅, cod
 
 ---
 
+Follow the communication-protocol skill for all user-facing output and interaction.
+
 ## Guidance (Both Modes)
 
 ### When You're Stuck

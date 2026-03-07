@@ -281,6 +281,8 @@ After saving, present Layer 1 and ask:
 (c) Run product-definition to start scoping what we'd build?
 (d) Move on?"
 
+Follow the communication-protocol skill for all user-facing output and interaction.
+
 ## Guidelines
 
 - **Evidence over estimates.** Pull from existing artifacts. Flag what's validated vs assumed.

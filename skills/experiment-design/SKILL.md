@@ -265,6 +265,8 @@ After saving, present Layer 1 and ask:
 (c) Run customer-discovery to execute the interview experiments?
 (d) Move on?"
 
+Follow the communication-protocol skill for all user-facing output and interaction.
+
 ## Guidelines
 
 - **Test the assumption that could kill you first.** Not the one that's easiest to test.

@@ -152,6 +152,8 @@ Study these for current visual language:
 - [Reduced motion handling, contrast ratios, keyboard nav]
 ```
 
+Follow the communication-protocol skill for all user-facing output and interaction.
+
 ## Guidelines
 
 - **Research before recommending.** Web search for what's current. Trends shift fast.

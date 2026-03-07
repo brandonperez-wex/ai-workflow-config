@@ -239,6 +239,8 @@ After saving, present Layer 1 and ask:
 | **Directional** | Range is meaningful but wide | Top-down + bottom-up attempted, some reconciliation |
 | **Validated** | Narrow range, defensible | Multiple sources agree, customer pricing data, bottom-up verified |
 
+Follow the communication-protocol skill for all user-facing output and interaction.
+
 ## Guidelines
 
 - **Ranges, not points.** "$50-150M" not "$97.3M". False precision destroys credibility.

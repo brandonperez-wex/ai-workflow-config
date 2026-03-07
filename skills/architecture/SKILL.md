@@ -175,6 +175,8 @@ SSE is the primary real-time pattern for AI agent UIs. Key decisions:
 [Migrations if any]
 ```
 
+Follow the communication-protocol skill for all user-facing output and interaction.
+
 ## Guidelines
 
 - **Contract first.** Define interfaces and schemas before implementing anything. Frontend and backend can build in parallel against the contract.
