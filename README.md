@@ -18,26 +18,72 @@ git clone https://github.com/brandonperez-wex/ai-workflow-config.git ~/ai-workfl
 ./scripts/sync-to-project.sh /path/to/your/project react-agent
 ```
 
+## Skill Router (RAG-based)
+
+The skill router uses local Ollama embeddings to match user prompts to the right skill via a graph-based routing system. It runs as a Claude Code `UserPromptSubmit` hook.
+
+### Prerequisites
+
+1. **Install Ollama** — https://ollama.com
+2. **Pull the embedding model:**
+   ```bash
+   ollama pull nomic-embed-text
+   ```
+3. **Ensure Ollama is running** (it starts automatically on macOS, or run `ollama serve`)
+
+### Setup
+
+```bash
+cd skill-router
+
+# Install dependencies
+npm install
+
+# Build TypeScript
+npm run build
+
+# Generate the skill graph with embeddings (requires Ollama running)
+npm run build-graph
+```
+
+### How it works
+
+The router maintains a skill graph (`skill-graph.json`) where each skill node has a pre-computed embedding vector. When a user submits a prompt:
+
+1. The prompt is embedded via Ollama's `nomic-embed-text` model
+2. Cosine similarity is computed against all skill nodes
+3. Top matches above the threshold are returned with graph context (prerequisites, references, macro category)
+4. The result is injected as `additionalContext` into Claude Code's hook system
+
+### Configuration
+
+Environment variables:
+
+| Variable | Default | Description |
+|----------|---------|-------------|
+| `OLLAMA_URL` | `http://localhost:11434` | Ollama API endpoint |
+| `EMBED_MODEL` | `nomic-embed-text` | Embedding model name |
+| `ROUTE_THRESHOLD` | `0.45` | Minimum cosine similarity to match |
+| `ROUTE_TOP_K` | `2` | Max number of skill matches returned |
+
+### Rebuilding the graph
+
+Re-run `npm run build-graph` after adding or modifying skills in `src/skill-graph.ts`.
+
 ## Structure
 
 ```
 ai-workflow-config/
+├── skills/                 # Reusable skills (~40 skill definitions)
+├── skill-router/           # RAG-based skill router (Ollama + graph embeddings)
+│   ├── src/                # TypeScript source
+│   └── skill-graph.json    # Pre-computed graph with embeddings
+│
 ├── instructions/           # IDE-agnostic canonical instructions
 │   ├── base.md             # Core instructions for all projects
 │   ├── coding-standards.md # Shared coding standards
 │   └── project-types/      # Project-specific additions
 │       └── react-agent.md
-│
-├── skills/                 # Reusable skills (Claude, Gemini conductor)
-│   ├── code-review/        # Code review workflow
-│   ├── commit-and-pr/      # Git commit and PR creation
-│   ├── docx/               # Word document manipulation
-│   ├── frontend-design/    # React/TypeScript UI with Tailwind
-│   ├── mcp-builder/        # MCP server creation
-│   ├── pdf/                # PDF operations
-│   ├── pptx/               # PowerPoint presentations
-│   ├── skill-creator/      # Meta-skill for creating skills
-│   └── xlsx/               # Excel spreadsheets
 │
 ├── agents/                 # Subagent definitions
 │   ├── code-reviewer.md
@@ -46,19 +92,13 @@ ai-workflow-config/
 │
 ├── plugins/                # Claude Code plugin configuration
 │   ├── plugins.json        # Plugins to install from marketplaces
-│   └── settings.template.json  # Settings with enabled plugins
-│
-├── ide-adapters/           # IDE-specific transforms
-│   ├── claude/
-│   ├── cursor/
-│   ├── gemini/
-│   └── codex/
+│   └── settings.template.json
 │
 ├── mcp/                    # MCP server configurations
 │   ├── servers.json
 │   └── setup-guides/
 │
-├── hooks/                  # Reusable hook scripts
+├── docs/plans/             # Design documents
 │
 └── scripts/                # Setup and sync scripts
     ├── install-mcps.sh
@@ -68,19 +108,19 @@ ai-workflow-config/
 
 ## Skills
 
-Skills follow the [Anthropic Agent Skills](https://github.com/anthropics/skills) specification:
+40 skills organized into macro categories by the skill router:
 
-| Skill | Description |
-|-------|-------------|
-| `code-review` | Thorough code review with security and performance focus |
-| `commit-and-pr` | Git workflow: stage, commit, push, create PR |
-| `docx` | Create, read, edit Word documents (.docx) |
-| `frontend-design` | React/TypeScript UI development with Tailwind |
-| `mcp-builder` | Create and configure MCP servers |
-| `pdf` | Read, merge, split, watermark, OCR PDF files |
-| `pptx` | Create and edit PowerPoint presentations |
-| `skill-creator` | Meta-skill for creating new skills |
-| `xlsx` | Create and edit Excel spreadsheets |
+| Category | Skills |
+|----------|--------|
+| **Software Design** | design, architecture, build, ship, tdd, test-planning, ui-ux-design, frontend-build, frontend-design, simplify |
+| **Quality** | systematic-debugging, code-review, receiving-code-review, verification |
+| **Product** | write-spec, product-definition, technical-breakdown, decompose-tasks |
+| **Business** | opportunity-research, opportunity-score, market-analysis, business-case, customer-discovery, experiment-design, innovation-status |
+| **AI Engineering** | ai-agent-building, eval-driven-dev, prompt-engineering, tool-discovery, mcp-builder |
+| **Infrastructure** | boilerplate-cicd, cloud-infrastructure, git-worktrees |
+| **Meta** | skill-creator, skill-eval, skill-maintenance, orchestrator |
+| **Delivery** | commit-and-pr, parallel-agents, sp-kanban, kanban-breakdown, docx, xlsx, pdf, pptx, mermaid, presentation, architecture-diagram |
+| **Cross-cutting** | research, coding-standards, communication-protocol |
 
 ## Plugins
 
@@ -115,6 +155,7 @@ Priority order for installation:
 4. **GitHub** - Enhanced repo operations
 5. **Context7** - Library documentation
 6. **Sequential Thinking** - Enhanced reasoning
+7. **Document Parser** - PDF/DOCX parsing
 
 ## IDE Support
 
@@ -124,23 +165,6 @@ Priority order for installation:
 | Cursor | `.cursorrules` | `sync-to-project.sh path cursor` |
 | Gemini CLI | `GEMINI.md` + `conductor/` | `sync-to-project.sh path gemini` |
 | Codex | `AGENTS.md` | `sync-to-project.sh path codex` |
-
-## Git Worktrees for Parallel Work
-
-Use git worktrees to run multiple Claude Code sessions in parallel:
-
-```bash
-# Create worktrees for parallel tasks
-git worktree add ../project-feature-a -b feature-a
-git worktree add ../project-feature-b -b feature-b
-
-# Each worktree gets its own Claude session
-cd ../project-feature-a && claude
-cd ../project-feature-b && claude
-
-# Merge when done
-git worktree remove ../project-feature-a
-```
 
 ## Portability
 
@@ -154,6 +178,10 @@ git clone https://github.com/brandonperez-wex/ai-workflow-config.git ~/ai-workfl
 cd ~/ai-workflow-config
 ./scripts/setup-claude.sh
 ./scripts/install-mcps.sh
+
+# Set up skill router
+cd skill-router
+npm install && npm run build && npm run build-graph
 ```
 
 This will:
@@ -161,6 +189,7 @@ This will:
 - Symlink all agents to `~/.claude/agents/`
 - Install marketplace plugins (requires `jq`)
 - Apply settings template if no settings exist
+- Build the skill routing graph (requires Ollama)
 
 ## License
 

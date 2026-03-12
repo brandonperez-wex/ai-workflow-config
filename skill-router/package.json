@@ -1,0 +1,17 @@
+{
+  "name": "skill-router",
+  "version": "0.1.0",
+  "description": "RAG-based skill router for Claude Code — graph embeddings + Ollama",
+  "type": "module",
+  "scripts": {
+    "build": "tsc",
+    "build-graph": "node dist/build-graph.js",
+    "route": "node dist/route.js",
+    "test": "vitest"
+  },
+  "devDependencies": {
+    "typescript": "^5.8.0",
+    "vitest": "^3.0.0",
+    "@types/node": "^22.0.0"
+  }
+}
