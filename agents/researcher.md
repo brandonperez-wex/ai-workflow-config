@@ -11,7 +11,7 @@ tools:
 disallowedTools:
   - Write
   - Edit
-model: haiku
+model: sonnet
 memory: user
 ---
 
