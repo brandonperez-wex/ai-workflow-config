@@ -12,6 +12,7 @@ echo "Setting up Claude Code configuration..."
 # Create Claude directories if they don't exist
 mkdir -p "$CLAUDE_DIR/skills"
 mkdir -p "$CLAUDE_DIR/agents"
+mkdir -p "$CLAUDE_DIR/hooks"
 
 # Symlink skills
 echo ""
@@ -52,6 +53,52 @@ for agent_file in "$CONFIG_DIR/agents"/*.md; do
     echo "  Linked: $agent_name"
   fi
 done
+
+# Symlink hooks
+echo ""
+echo "Linking hooks..."
+for hook_file in "$CONFIG_DIR/hooks"/*.sh; do
+  if [ -f "$hook_file" ]; then
+    hook_name=$(basename "$hook_file")
+    target="$CLAUDE_DIR/hooks/$hook_name"
+
+    if [ -L "$target" ]; then
+      rm "$target"
+    elif [ -f "$target" ]; then
+      echo "  Skipping $hook_name (already exists)"
+      continue
+    fi
+
+    ln -s "$hook_file" "$target"
+    chmod +x "$target"
+    echo "  Linked: $hook_name"
+  fi
+done
+
+# Configure hooks in settings.json if not already present
+if [ -f "$CLAUDE_DIR/settings.json" ]; then
+  if command -v jq &> /dev/null; then
+    # Check if hooks are already configured
+    has_hooks=$(jq -r '.hooks // empty' "$CLAUDE_DIR/settings.json")
+    if [ -z "$has_hooks" ]; then
+      echo "  Adding hook configuration to settings.json..."
+      jq '.hooks = {
+        "SessionStart": [{
+          "matcher": "",
+          "hooks": [{"type": "command", "command": "'"$CLAUDE_DIR/hooks/session-start.sh"'"}]
+        }],
+        "UserPromptSubmit": [{
+          "matcher": "",
+          "hooks": [{"type": "command", "command": "'"$CLAUDE_DIR/hooks/skill-router.sh"'"}]
+        }]
+      }' "$CLAUDE_DIR/settings.json" > "$CLAUDE_DIR/settings.json.tmp" && \
+        mv "$CLAUDE_DIR/settings.json.tmp" "$CLAUDE_DIR/settings.json"
+      echo "  Hooks configured in settings.json"
+    else
+      echo "  Hooks already configured in settings.json"
+    fi
+  fi
+fi
 
 # Install plugins from marketplace
 echo ""
@@ -112,5 +159,12 @@ echo ""
 echo "Agents available:"
 ls -1 "$CLAUDE_DIR/agents" 2>/dev/null || echo "  (none)"
 echo ""
+echo "Hooks installed:"
+ls -1 "$CLAUDE_DIR/hooks" 2>/dev/null || echo "  (none)"
+echo ""
 echo "Use /code-review, /commit-and-pr, etc. to invoke skills"
 echo "Agents will be used automatically based on their descriptions"
+echo ""
+echo "NOTE: The skill router hook requires Ollama with nomic-embed-text."
+echo "  Install: https://ollama.com → ollama pull nomic-embed-text"
+echo "  Build graph: cd $(dirname "$SCRIPT_DIR")/skill-router && npm install && npm run build && npm run build-graph"
